@@ -54,7 +54,7 @@ namespace Microsoft.VisualStudio.LanguageServices.Implementation.UnusedReference
                     new ColumnState2(UnusedReferencesColumnDefinitions.SolutionName, isVisible: false, width: 200, sortPriority: 0, descendingSort: false, groupingPriority: 1),
                     new ColumnState2(UnusedReferencesColumnDefinitions.ProjectName, isVisible: false, width: 200, sortPriority: 0, descendingSort: false, groupingPriority: 2),
                     new ColumnState2(UnusedReferencesColumnDefinitions.ReferenceType, isVisible: false, width: 200, sortPriority: 0, descendingSort: false, groupingPriority: 3),
-                    new ColumnState(UnusedReferencesColumnDefinitions.ReferenceName, isVisible: true, width: 300, sortPriority: 0, descendingSort: false),
+                    new ColumnState(UnusedReferencesColumnDefinitions.ReferenceName, isVisible: true, width: 300, sortPriority: 1, descendingSort: false),
                     new ColumnState(UnusedReferencesColumnDefinitions.UpdateAction, isVisible: true, width: 100, sortPriority: 0, descendingSort: false));
             }
         }

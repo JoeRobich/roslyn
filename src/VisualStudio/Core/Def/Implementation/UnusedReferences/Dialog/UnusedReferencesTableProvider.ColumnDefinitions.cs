@@ -104,6 +104,17 @@ namespace Microsoft.VisualStudio.LanguageServices.Implementation.UnusedReference
             return stackPanel;
         }
 
+        private static ImageMoniker GetReferenceTypeImageMoniker(ReferenceType referenceType)
+        {
+            return referenceType switch
+            {
+                ReferenceType.Package => ReferenceImageMonikers.Package,
+                ReferenceType.Project => ReferenceImageMonikers.Project,
+                ReferenceType.Assembly => ReferenceImageMonikers.Assembly,
+                _ => throw ExceptionUtilities.UnexpectedValue(referenceType)
+            };
+        }
+
         [Export(typeof(ITableColumnDefinition))]
         [Name(UnusedReferencesColumnDefinitions.SolutionName)]
         internal class SolutionNameColumnDefinition : TableColumnDefinitionBase
@@ -191,7 +202,7 @@ namespace Microsoft.VisualStudio.LanguageServices.Implementation.UnusedReference
             {
                 if (entry.TryGetValue<ReferenceType>(UnusedReferencesTableKeyNames.ReferenceType, out var referenceType))
                 {
-                    content = CreateGridElement(GetImageMoniker(referenceType), GetText(referenceType), isBold: false);
+                    content = CreateGridElement(GetReferenceTypeImageMoniker(referenceType), GetText(referenceType), isBold: false);
                     return true;
                 }
 
@@ -202,19 +213,8 @@ namespace Microsoft.VisualStudio.LanguageServices.Implementation.UnusedReference
             public override IEntryBucket? CreateBucketForEntry(ITableEntryHandle entry)
             {
                 return entry.TryGetValue<ReferenceType>(UnusedReferencesTableKeyNames.ReferenceType, out var referenceType)
-                    ? new ImageEntryBucket(GetImageMoniker(referenceType), GetText(referenceType))
+                    ? new ImageEntryBucket(GetReferenceTypeImageMoniker(referenceType), GetText(referenceType))
                     : null;
-            }
-
-            private static ImageMoniker GetImageMoniker(ReferenceType referenceType)
-            {
-                return referenceType switch
-                {
-                    ReferenceType.Package => ReferenceImageMonikers.Package,
-                    ReferenceType.Project => ReferenceImageMonikers.Project,
-                    ReferenceType.Assembly => ReferenceImageMonikers.Assembly,
-                    _ => throw ExceptionUtilities.UnexpectedValue(referenceType)
-                };
             }
 
             private static string GetText(ReferenceType referenceType)
@@ -250,16 +250,15 @@ namespace Microsoft.VisualStudio.LanguageServices.Implementation.UnusedReference
                 return true;
             }
 
+            public override bool TryCreateStringContent(ITableEntryHandle entry, bool truncatedText, bool singleColumnView, out string content)
+            {
+                return entry.TryGetValue(UnusedReferencesTableKeyNames.ReferenceName, out content);
+            }
+
             private static ImageMoniker GetImageMoniker(ITableEntryHandle entry)
             {
                 return entry.TryGetValue(UnusedReferencesTableKeyNames.ReferenceType, out ReferenceType referenceType)
-                    ? referenceType switch
-                    {
-                        ReferenceType.Package => KnownMonikers.PackageReference,
-                        ReferenceType.Project => KnownMonikers.Library,
-                        ReferenceType.Assembly => KnownMonikers.Reference,
-                        _ => throw ExceptionUtilities.UnexpectedValue(referenceType)
-                    }
+                    ? GetReferenceTypeImageMoniker(referenceType)
                     : default;
             }
 
@@ -284,6 +283,7 @@ namespace Microsoft.VisualStudio.LanguageServices.Implementation.UnusedReference
             public override string Name => UnusedReferencesColumnDefinitions.UpdateAction;
             public override string DisplayName => ServicesVSResources.Action;
             public override bool IsFilterable => false;
+            public override bool IsSortable => false;
             public override double MinWidth => 100;
 
             public override bool TryCreateColumnContent(ITableEntryHandle entry, bool singleColumnView, out FrameworkElement? content)
