@@ -409,6 +409,59 @@ public class CSharpTestMethodFinderTests
 
     #endregion
 
+    #region TUnit
+
+    [Fact]
+    public async Task TestFindsTUnitTestMethod()
+    {
+        var code = """
+            using TUnit.Core;
+            public class TestClass
+            {
+                [Test]
+                public void Test$$Method1() { }
+            }
+
+            """;
+        await TestMSTestAsync(code, "TestMethod1");
+    }
+
+    [Fact]
+    public async Task TestFindsTUnitTestAttribute()
+    {
+        var code = """
+            using TUnit.Core;
+            public class TestClass
+            {
+                [TestAttribute]
+                public void Test$$Method1() { }
+            }
+
+            """;
+        await TestMSTestAsync(code, "TestMethod1");
+    }
+
+    [Fact]
+    public async Task TestFindsTUnitTestsInClass()
+    {
+        var code = """
+            using TUnit.Core;
+            public class Test$$Class
+            {
+                [Test]
+                public void TestMethod1() { }
+
+                [Test]
+                public void TestMethod2() { }
+
+                public void NotTestMethod() { }
+            }
+            """;
+        await TestMSTestAsync(code, "TestMethod1", "TestMethod2");
+    }
+
+    #endregion
+
     [Fact]
     public async Task TestFindsTestMethodInBlockScopedNamespace()
     {
